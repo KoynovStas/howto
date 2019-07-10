@@ -43,7 +43,7 @@ curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.de
 sudo EXTERNAL_URL="http://10.30.1.210" apt-get install gitlab-ce
 ```
 
-во время установки нужно будет ввести пароль для root-a сервера GitLab-а!
+во время установки нужно будет ввести пароль для root-a GitLab-а (супер пользователь внутри GitLab, который будет создавать пользователей и выполнять админские штуки!)
 
 * User: `root`
 * Pass: `xxx`
