@@ -22,7 +22,9 @@
 
 Для работы выбрана OS Ubunut Server 18.04.1 64 bit
 
-Download:  [https://www.ubuntu.com/download/server](https://www.ubuntu.com/download/server)
+Download:
+ - [https://mirror.yandex.ru/ubuntu-releases/](https://mirror.yandex.ru/ubuntu-releases/)
+ - [http://old-releases.ubuntu.com/releases/18.04.1/](http://old-releases.ubuntu.com/releases/18.04.1/)
 
 
 1. Install and configure the necessary dependencies
@@ -55,7 +57,7 @@ sudo EXTERNAL_URL="http://10.30.1.210" apt-get install gitlab-ce
 
 1. Перенос всех данных (`/var/opt/gitlab`) на RAID
 
-Для этого через `mc` копируем директорию `/var/opt/gitlab` на рэйд, **с сохранением атрибутов файлов** (родитель/права и т.п)
+Для этого через `mc` копируем директорию `/var/opt/gitlab` на рэйд(у меня: `/raid` итого получим `/raid/gitlab`), **с сохранением атрибутов файлов** (родитель/права и т.п, без этого могут быть проблемы)
 
 ```console
 sudo gitlab-ctl stop
@@ -118,7 +120,7 @@ gitlab-ctl reconfigure gitlab-ctl restart
 
 ## Настройка Rsync
 
-Я хочу чтобы бэкапы и статусы заливались с сервера на мою машину, для этого будет использовать Rsync.
+Я хочу чтобы бэкапы и статусы заливались с сервера на мою машину, для этого будем использовать Rsync.
 
 создание файла конфига
 ```console

@@ -63,9 +63,10 @@ sudo nano /etc/fstab
 
 ```console
 # Параметры для tmpfs
-tmpfs /tmp                tmpfs defaults 0 0
-tmpfs /var/tmp            tmpfs defaults 0 0
-tmpfs /home/xxx/.cache    tmpfs defaults 0 0
+tmpfs /tmp             tmpfs defaults 0 0
+tmpfs /var/tmp         tmpfs defaults 0 0
+tmpfs /run             tmpfs defaults 0 0
+tmpfs /home/xxx/.cache tmpfs defaults 0 0
 ```
 
 
