@@ -53,7 +53,8 @@
 
 Для работы выбрана OS Ubunut Server 18.04.1 64 bit
 
-Download:  [https://www.ubuntu.com/download/server](https://www.ubuntu.com/download/server)
+Download: [https://www.ubuntu.com/download/server](https://www.ubuntu.com/download/server)
+Старые релизы: [https://old-releases.ubuntu.com/releases/](https://old-releases.ubuntu.com/releases/)
 
 
 
@@ -62,7 +63,7 @@ Download:  [https://www.ubuntu.com/download/server](https://www.ubuntu.com/downl
 Для создания и управления [RAID](https://ru.wikipedia.org/wiki/RAID) массивом вам потребуется утилита [mdadm](http://xgu.ru/wiki/mdadm)
 
 ```console
-sudo apt-get install mdadm
+sudo apt install mdadm
 ```
 
 
@@ -82,10 +83,10 @@ fdisk -l
 ```
 
 
-Просмотреть, какие разделы куда смонтированы, и сколько свободного места есть на них (размеры в килобайтах):
+Просмотреть, какие разделы куда смонтированы, и сколько свободного места есть на них:
 
 ```console
-df -k
+df -h
 ```
 
 Если вы будете использовать созданные ранее разделы, обязательно размонтируйте их. RAID-массив нельзя создавать поверх разделов, на которых находятся смонтированные файловые системы.
@@ -102,8 +103,16 @@ umount /dev/hdeX
 
 
 ```console
-parted -a optimal /dev/sda
+# parted /dev/sdx
+(parted) mklabel gpt
+(parted) mkpart "RAID hdd-1" ext4 1MiB 100%
+(parted) set 1 raid on
 ```
+
+Можно разметить другие диски, используя `select` для переключения между ними, детальное описание смотри тут: https://wiki.archlinux.org/title/Parted_(Русский)
+
+
+---
 
 
 Если меньше 2ТБ, то можно размечать `fdisk-ом` или `cfdisk-ом`(псевдо-графическая утилита)
@@ -324,9 +333,6 @@ mkfs.ext4 -b 4096 /dev/md0
 
 Строки, которые следует добавить в этот файл, можно получить при помощи команды
 
- `mdadm --detail --scan`
-
-Вот пример её использования:
 
 ```console
 mdadm --detail --scan
@@ -349,7 +355,7 @@ echo "DEVICE partitions" > /etc/mdadm/mdadm.conf
 
 Если же он есть, то он выглядит как то так:
 
-```console
+```
 # mdadm.conf
 #
 # !NB! Run update-initramfs -u after updating this file.
@@ -660,6 +666,7 @@ md0 : active raid1 sdb4[1] sda4[0]
      [==========>..........]  resync =  50.0% (514048/1028096) finish=97.3min speed=65787K/sec
 ```
 
+После замены возможно нужно будет переписать конфиг mdadm.conf.
 
 На этом все! Мы знаем как создать RAID массив, как посмотреть его состояние, и как заменить hdd в случае его отказа.
 
