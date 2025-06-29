@@ -20,18 +20,18 @@
 
 ## Omnibus package installation
 
-Для работы выбрана OS Ubunut Server 18.04.1 64 bit
+Для работы выбрана OS Ubunut Server 22.04.1 64 bit
 
 Download:
  - [https://mirror.yandex.ru/ubuntu-releases/](https://mirror.yandex.ru/ubuntu-releases/)
- - [http://old-releases.ubuntu.com/releases/18.04.1/](http://old-releases.ubuntu.com/releases/18.04.1/)
+ - [http://old-releases.ubuntu.com/releases/22.04.1/](http://old-releases.ubuntu.com/releases/22.04.1/)
 
 
 1. Install and configure the necessary dependencies
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y curl openssh-server ca-certificates tzdata perl
+sudo apt update
+sudo apt install -y curl openssh-server ca-certificates tzdata perl
 ```
 
 2. Add the GitLab package repository and install the package
@@ -42,8 +42,10 @@ curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.de
 ```
 
 ```bash
-sudo EXTERNAL_URL="http://10.30.1.210" apt-get install gitlab-ce
+sudo EXTERNAL_URL="http://10.30.1.210" apt install gitlab-ce
 ```
+
+IPv4 `10.30.1.210` - это пример IP сервера гитлаба, замените его на ваш IP или DNS имя, если оно у вас настроено.
 
 во время установки нужно будет ввести пароль для root-a GitLab-а (супер пользователь внутри GitLab, который будет создавать пользователей и выполнять админские штуки!)
 
@@ -111,18 +113,16 @@ sudo gitlab-ctl start
 
 ##### 2. E-Mail
 
-Настройку почты просто смотрим в доке: [E-Mail](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/smtp.md)
+Настройку почты, через которую GitLab будет вести рассылку, просто смотрим в доке: [E-Mail](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/smtp.md)
 
 > Note: Для Yandex почты нужно создать пароль для приложения! (Яндекс сгенерит новый пароль, его нужно прописывать в конфиг GitLab-а!). Безопасность-> Добавить Новое приложение -> ....
 
-Для тестирования почты из gitlab-rails консоли выполните
+Для тестирования почты из `gitlab-rails` консоли выполните:
 
 ```bash
 gitlab-rails console
-```
 
-Команда, для отсылки письма на указанный адрес:
-```bash
+# Команда, для отсылки письма на указанный адрес:
 Notify.test_email('destination_email@address.com', 'Message Subject', 'Message Body').deliver_now
 
 # для выхода из консоли gitlab-rails
@@ -149,7 +149,7 @@ sudo gitlab-ctl restart
 
 ## Настройка Backup
 
-Для бэкапа будем использовать планировщик cron и скрипт: [gitlab_backup.sh](./gitlab_backup.sh)
+Для бэкапа будем использовать планировщик [cron](https://ru.wikipedia.org/wiki/Cron) и скрипт: [gitlab_backup.sh](./gitlab_backup.sh)
 
 Я также добавляю генерацию файлов с различной информацией о сервере [server_status.sh](./server_status.sh):
 
@@ -211,18 +211,20 @@ hosts allow = localhost 10.30.1.90
 hosts deny = *
 ```
 
+IP `10.30.1.90` - куда надо заливать файлы.
+
 
 Управление:
 
 ```bash
-sudo systemctl status rsync.service
-sudo systemctl start rsync.service
-sudo systemctl enable rsync.service
+sudo systemctl status  rsync.service
+sudo systemctl start   rsync.service
+sudo systemctl enable  rsync.service
 sudo systemctl disable rsync.service
 ```
 
 
-Настройка машины, на которую будут заливаться backup-ы. Для этого также будем использовать cron, добавляем задания синхронизации:
+Настройка машины, на которую будут заливаться backup-ы. Для этого также будем использовать [cron](https://ru.wikipedia.org/wiki/Cron), добавляем задания синхронизации:
 
 
 ```bash
@@ -230,6 +232,8 @@ sudo systemctl disable rsync.service
 10 13	* * *	xxx     rsync -au --delete-after rsync@10.30.1.210::backups /home/xxx/Data/Backups/gitlab
 10 */2	* * *	xxx     rsync -au --delete-after rsync@10.30.1.210::status  /home/xxx/Data/Backups/gitlab_status
 ```
+
+> Не забываем, заменить IPv4 адрес GitLab сервера.
 
 
 
@@ -261,7 +265,12 @@ sudo gitlab-ctl restart
 ```bash
 sudo cp 11493107454_2018_04_25_10.6.4-ce_gitlab_backup.tar /raid/gitlab/backups/
 sudo chown git:git /raid/gitlab/backups/11493107454_2018_04_25_10.6.4-ce_gitlab_backup.tar
+
+
+# если надо использовать ssh cp
+scp 11493107454_2018_04_25_10.6.4-ce_gitlab_backup.tar git@10.30.1.210:/raid/gitlab/backups/
 ```
+
 
 Теперь можно провести восстановление:
 
