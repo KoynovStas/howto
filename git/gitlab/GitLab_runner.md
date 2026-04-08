@@ -72,10 +72,27 @@ sudo gitlab-runner register \
 
 # Конфигурация
 
+После установки, пользователь `gitlab-runner` должен быть создан автоматически, если это не так, создаем в ручном режиме:
+
+```bash
+# Создать и настроить пользователя GitLab Runner
+CI_USER="gitlab-runner"
+sudo useradd --comment 'GitLab Runner' --create-home $CI_USER --shell /bin/bash
+sudo passwd --delete $CI_USER
+sudo rm -f /home/$CI_USER/.bash_logout
+```
+
 Добавление пользователя `gitlab-runner` в группу `xxx`
 ```bash
 sudo usermod -a -G xxx gitlab-runner
+
+# добавление в группу sudo (опционально)
+sudo usermod -a -G sudo gitlab-runner
+
+# для команд sudo у пользователя не будут спрашивать пароль!
+echo "gitlab-runner ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/gitlab-runner
 ```
+
 
 Далее я устанавливаю тулчейн для ARM:
 
